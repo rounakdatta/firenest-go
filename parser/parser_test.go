@@ -7,11 +7,7 @@ import (
 
 func TestAbstractClass(t *testing.T) {
 	hdfcAccount := HDFCAccount{}
-	Process(&hdfcAccount)
+	Process(&hdfcAccount, "Just a blank SMS")
 
-	axisAccount := AxisAccount{}
-	Process(&axisAccount)
-
-	assert.Equal(t, hdfcAccount.Name, "HDFC")
-	assert.Equal(t, axisAccount.Name, "Axis")
+	assert.Equal(t, hdfcAccount.Name, "HDFC Bank")
 }

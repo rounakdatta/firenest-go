@@ -3,13 +3,13 @@ package parser
 type AssetAccountParser interface {
 	setAccountName()
 	setAccountId() error
-	parseTransactionAmount() error
-	parseTransactionDate() error
-	parseTransactionDescription() error
+	parseTransactionAmount(string) error
+	parseTransactionDate(string) error
+	parseTransactionDescription(string) error
 }
 
 type Transaction struct {
-	Amount int
+	Amount float64
 	Date string
 	Description string
 }
@@ -20,16 +20,10 @@ type AssetAccount struct {
 	TransactionDetails Transaction
 }
 
-func (a *AssetAccount) setAccountId() error {
-	// logic to fetch ID from db lies here
-	a.Id = -1
-	return nil
-}
-
-func Process(parser AssetAccountParser) {
+func Process(parser AssetAccountParser, message string) {
 	parser.setAccountName()
 	parser.setAccountId()
-	parser.parseTransactionAmount()
-	parser.parseTransactionDate()
-	parser.parseTransactionDescription()
+	parser.parseTransactionAmount(message)
+	parser.parseTransactionDate(message)
+	parser.parseTransactionDescription(message)
 }
