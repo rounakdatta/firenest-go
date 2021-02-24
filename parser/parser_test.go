@@ -10,4 +10,5 @@ func TestAbstractClass(t *testing.T) {
 	Process(&hdfcAccount, "Just a blank SMS")
 
 	assert.Equal(t, hdfcAccount.Name, "HDFC Bank")
+	assert.Equal(t, hdfcAccount.TransactionDetails.Type, DEBIT)
 }

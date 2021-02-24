@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type HDFCAccount struct {
@@ -40,11 +41,34 @@ func (a *HDFCAccount) parseTransactionAmount(message string) error {
 }
 
 func (a *HDFCAccount) parseTransactionDate(message string) error {
-	a.TransactionDetails.Date = "yesterday"
+	dateRegex := regexp.MustCompile("(?:(?:on)\\.?\\s?)(\\d+?-(\\d+?|\\w{3})-\\d+)")
+	bankDateFormat := "02-Jan-06"
+
+	extractedDate := dateRegex.FindString(message)
+	extractedDateSplit := strings.Split(extractedDate, " ")
+	if len(extractedDateSplit) > 1 {
+		extractedDate = extractedDateSplit[1]
+	} else {
+		extractedDate = extractedDateSplit[0]
+	}
+	standardDateFormat, err := time.Parse(bankDateFormat, extractedDate)
+	if err != nil {
+		return err
+	}
+
+	expectedDateFormat := standardDateFormat.Format("2006-01-02")
+	a.TransactionDetails.Date = expectedDateFormat
 	return nil
 }
 
 func (a *HDFCAccount) parseTransactionDescription(message string) error {
-	a.TransactionDetails.Description = "amount x has been credited"
+	var descriptionRegex *regexp.Regexp
+	if a.TransactionDetails.Type == DEBIT {
+		descriptionRegex = regexp.MustCompile(`(?:(?:to)\.?\s?)(.+?(?P<desc>\.))`)
+	} else {
+		descriptionRegex = regexp.MustCompile(`(?:(?:to\ [^a|A]|for)\s?)(.+?(?P<desc>\.))`)
+	}
+
+	a.TransactionDetails.Description = descriptionRegex.FindString(message)
 	return nil
 }

@@ -24,5 +24,7 @@ func TestHDFCAcccount(t *testing.T) {
 	Process(&hdfcAccount, message)
 
 	assert.Equal(t, hdfcAccount.Name, "HDFC Bank")
+	assert.Equal(t, hdfcAccount.TransactionDetails.Type, CREDIT)
 	assert.Equal(t, hdfcAccount.TransactionDetails.Amount, float64(10567))
+	assert.Equal(t, hdfcAccount.TransactionDetails.Date, "2021-01-10")
 }
