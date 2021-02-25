@@ -22,7 +22,7 @@ func (a *HDFCAccount) setAccountName() {
 }
 
 func (a *HDFCAccount) parseTransactionAmount(message string) error {
-	amountRegex := regexp.MustCompile("(?:(?:RS|Rs|INR|MRP)\\.?\\s?)(\\d+(:?\\,\\d+)?(\\,\\d+)?(\\.\\d{1,2})?)")
+	amountRegex := regexp.MustCompile(`(?:(?:RS|Rs|INR|MRP)\.?\s?)(\d+(:?\,\d+)?(\,\d+)?(\.\d{1,2})?)`)
 	amountStringified := amountRegex.FindString(message)
 
 	if len(amountStringified) != 0 {
@@ -41,7 +41,7 @@ func (a *HDFCAccount) parseTransactionAmount(message string) error {
 }
 
 func (a *HDFCAccount) parseTransactionDate(message string) error {
-	dateRegex := regexp.MustCompile("(?:(?:on)\\.?\\s?)(\\d+?-(\\d+?|\\w{3})-\\d+)")
+	dateRegex := regexp.MustCompile(`(?:(?:on)\.?\s?)(\d+?-(\d+?|\w{3})-\d+)`)
 	bankDateFormat := "02-Jan-06"
 
 	extractedDate := dateRegex.FindString(message)
@@ -64,7 +64,7 @@ func (a *HDFCAccount) parseTransactionDate(message string) error {
 func (a *HDFCAccount) parseTransactionDescription(message string) error {
 	var descriptionRegex *regexp.Regexp
 	if a.TransactionDetails.Type == DEBIT {
-		descriptionRegex = regexp.MustCompile(`(?:(?:to)\.?\s?)(.+?(?P<desc>\.))`)
+		descriptionRegex = regexp.MustCompile(`(?:(?:Info)\.?\s?)(.+?(?P<desc>\.))`)
 	} else {
 		descriptionRegex = regexp.MustCompile(`(?:(?:to\ [^a|A]|for)\s?)(.+?(?P<desc>\.))`)
 	}

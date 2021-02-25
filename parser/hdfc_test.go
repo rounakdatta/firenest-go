@@ -18,7 +18,7 @@ func ReadHDFCMessageFromFile(fileName string) string {
 	return ""
 }
 
-func TestHDFCAcccount(t *testing.T) {
+func TestHDFCCreditMessage(t *testing.T) {
 	hdfcAccount := HDFCAccount{}
 	message := ReadHDFCMessageFromFile("hdfc.credit")
 	Process(&hdfcAccount, message)
@@ -27,4 +27,15 @@ func TestHDFCAcccount(t *testing.T) {
 	assert.Equal(t, hdfcAccount.TransactionDetails.Type, CREDIT)
 	assert.Equal(t, hdfcAccount.TransactionDetails.Amount, float64(10567))
 	assert.Equal(t, hdfcAccount.TransactionDetails.Date, "2021-01-10")
+}
+
+func TestHDFCDebitMessage(t *testing.T) {
+	hdfcAccount := HDFCAccount{}
+	message := ReadHDFCMessageFromFile("hdfc.debit")
+	Process(&hdfcAccount, message)
+
+	assert.Equal(t, hdfcAccount.Name, "HDFC Bank")
+	assert.Equal(t, hdfcAccount.TransactionDetails.Type, DEBIT)
+	assert.Equal(t, hdfcAccount.TransactionDetails.Amount, float64(10000))
+	assert.Equal(t, hdfcAccount.TransactionDetails.Date, "2021-05-12")
 }
