@@ -1,7 +1,6 @@
 package firefly
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/rounakdatta/firenest/parser"
@@ -22,5 +21,15 @@ func TestCreateTransaction(t *testing.T) {
 	message := utils.ReadMessageFromFile("hdfc.credit")
 	processor := ParseMessage(message, "VM-HDFCBK")
 	transaction := CreateTransaction(processor)
-	fmt.Println(transaction)
+
+	assert.Equal(t, transaction.Type, "deposit")
+	assert.Equal(t, transaction.Date, "2021-01-10")
+	assert.Equal(t, transaction.DestinationName, "HDFC Bank")
+	assert.Equal(t, transaction.SourceName, "(no name)")
+}
+
+func TestGetEndpoint(t *testing.T) {
+	defaultEndpoint := GetEndpoint()
+
+	assert.Equal(t, defaultEndpoint, "http://localhost/money/api/v1/transactions")
 }

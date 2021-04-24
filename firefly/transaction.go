@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"regexp"
 
+	"github.com/joho/godotenv"
 	"github.com/rounakdatta/firenest/database"
 	"github.com/rounakdatta/firenest/parser"
 )
@@ -46,7 +48,10 @@ func transformType(direction parser.Direction) string {
 func getDefaultAccount() (int, string) {
 	defaultAccountName := "(no name)"
 
-	db, _ := database.GetConnection()
+	db, err := database.GetConnection()
+	if err != nil {
+		return -1, defaultAccountName
+	}
 	return database.GetAccountIdFromName(db, defaultAccountName), defaultAccountName
 }
 
@@ -99,6 +104,26 @@ func CreateTransaction(account parser.AssetAccount) Transaction {
 		DestinationName: destinationAccountName,
 		Notes:           account.TransactionDetails.Description,
 	}
+}
+
+func GetEndpoint() string {
+	err := godotenv.Load()
+	host := "http://localhost"
+	if err == nil {
+		host = os.Getenv("FIREFLY_ENDPOINT")
+	}
+
+	fireflyEndpoint := fmt.Sprintf("%s/money/api/v1/transactions", host)
+	return fireflyEndpoint
+}
+
+func GetPersonalAccessToken() string {
+	err := godotenv.Load()
+	if err != nil {
+		return ""
+	}
+
+	return os.Getenv("FIREFLY_PAT")
 }
 
 func SendFireflyRequest(method string, url string, transaction Transaction, headers map[string]string) error {
