@@ -1,26 +1,15 @@
 package parser
 
 import (
-	"fmt"
-	"io/ioutil"
 	"testing"
 
+	"github.com/rounakdatta/firenest/utils"
 	"github.com/stretchr/testify/assert"
 )
 
-func ReadHDFCMessageFromFile(fileName string) string {
-	filePath := fmt.Sprintf("../resources/test/%s", fileName)
-	message, err := ioutil.ReadFile(filePath)
-	if err == nil {
-		return string(message)
-	}
-
-	return ""
-}
-
 func TestHDFCCreditMessage(t *testing.T) {
 	hdfcAccount := HDFCAccount{}
-	message := ReadHDFCMessageFromFile("hdfc.credit")
+	message := utils.ReadMessageFromFile("hdfc.credit")
 	Process(&hdfcAccount, message)
 
 	assert.Equal(t, hdfcAccount.Name, "HDFC Bank")
@@ -31,7 +20,7 @@ func TestHDFCCreditMessage(t *testing.T) {
 
 func TestHDFCDebitMessage(t *testing.T) {
 	hdfcAccount := HDFCAccount{}
-	message := ReadHDFCMessageFromFile("hdfc.debit")
+	message := utils.ReadMessageFromFile("hdfc.debit")
 	Process(&hdfcAccount, message)
 
 	assert.Equal(t, hdfcAccount.Name, "HDFC Bank")

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/rounakdatta/firenest/firefly"
 )
 
 func main() {
@@ -31,8 +31,10 @@ func GetRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func ParseSMS(w http.ResponseWriter, r *http.Request) {
-	smsPayload := r.FormValue("payload")
-	fmt.Println(smsPayload)
+	message := r.FormValue("message")
+	sender := r.FormValue("sender")
+
+	processor := firefly.ParseMessage(message, sender)
 
 	payload := []byte("OK")
 	w.Write(payload)

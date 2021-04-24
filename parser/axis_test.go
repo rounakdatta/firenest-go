@@ -1,26 +1,15 @@
 package parser
 
 import (
-	"fmt"
-	"io/ioutil"
 	"testing"
 
+	"github.com/rounakdatta/firenest/utils"
 	"github.com/stretchr/testify/assert"
 )
 
-func ReadAxisMessageFromFile(fileName string) string {
-	filePath := fmt.Sprintf("../resources/test/%s", fileName)
-	message, err := ioutil.ReadFile(filePath)
-	if err == nil {
-		return string(message)
-	}
-
-	return ""
-}
-
 func TestAxisCreditMessage(t *testing.T) {
 	axisAccount := AxisAccount{}
-	message := ReadAxisMessageFromFile("axis.credit")
+	message := utils.ReadMessageFromFile("axis.credit")
 	Process(&axisAccount, message)
 
 	assert.Equal(t, axisAccount.Name, "Axis Bank")
@@ -31,7 +20,7 @@ func TestAxisCreditMessage(t *testing.T) {
 
 func TestAxisDebitMessage(t *testing.T) {
 	axisAccount := AxisAccount{}
-	message := ReadAxisMessageFromFile("axis.debit")
+	message := utils.ReadMessageFromFile("axis.debit")
 	Process(&axisAccount, message)
 
 	assert.Equal(t, axisAccount.Name, "Axis Bank")

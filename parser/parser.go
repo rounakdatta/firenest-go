@@ -14,6 +14,7 @@ type AssetAccountParser interface {
 	parseTransactionAmount(string) error
 	parseTransactionDate(string) error
 	parseTransactionDescription(string) error
+	getAssetAccount() AssetAccount
 }
 
 type Direction uint32
@@ -60,11 +61,16 @@ func (a *AssetAccount) parseTransactionType(message string) error {
 	return nil
 }
 
-func Process(parser AssetAccountParser, message string) {
+func (a *AssetAccount) getAssetAccount() AssetAccount {
+	return *a
+}
+
+func Process(parser AssetAccountParser, message string) AssetAccount {
 	parser.setAccountName()
 	parser.setAccountId()
 	parser.parseTransactionType(message)
 	parser.parseTransactionAmount(message)
 	parser.parseTransactionDate(message)
 	parser.parseTransactionDescription(message)
+	return parser.getAssetAccount()
 }
