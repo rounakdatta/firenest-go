@@ -3,6 +3,8 @@ package parser
 import (
 	"errors"
 	"regexp"
+
+	"github.com/rounakdatta/firenest/database"
 )
 
 type AssetAccountParser interface {
@@ -15,22 +17,32 @@ type AssetAccountParser interface {
 }
 
 type Direction uint32
+
 const (
-	DEBIT Direction = 0
+	DEBIT  Direction = 0
 	CREDIT Direction = 1
 )
 
 type Transaction struct {
-	Type Direction
-	Amount float64
-	Date string
+	Type        Direction
+	Amount      float64
+	Date        string
 	Description string
 }
 
 type AssetAccount struct {
-	Name string
-	Id int
+	Name               string
+	Id                 int
 	TransactionDetails Transaction
+}
+
+func (a *AssetAccount) setAccountId() error {
+	db, err := database.GetConnection()
+	if err != nil {
+		return err
+	}
+	a.Id = database.GetAccountIdFromName(db, a.Name)
+	return nil
 }
 
 func (a *AssetAccount) parseTransactionType(message string) error {

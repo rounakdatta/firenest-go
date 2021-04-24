@@ -11,12 +11,6 @@ type HDFCAccount struct {
 	AssetAccount
 }
 
-func (a *HDFCAccount) setAccountId() error {
-	// logic to fetch ID from db lies here
-	a.Id = -1
-	return nil
-}
-
 func (a *HDFCAccount) setAccountName() {
 	a.Name = "HDFC Bank"
 }

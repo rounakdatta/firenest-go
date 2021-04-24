@@ -11,12 +11,6 @@ type AxisAccount struct {
 	AssetAccount
 }
 
-func (a *AxisAccount) setAccountId() error {
-	// logic to fetch ID from db lies here
-	a.Id = -1
-	return nil
-}
-
 func (a *AxisAccount) setAccountName() {
 	a.Name = "Axis Bank"
 }
