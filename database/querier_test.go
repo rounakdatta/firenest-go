@@ -59,7 +59,7 @@ func TestGetAccountIdFromName(t *testing.T) {
 
 	mockAxisRow := sqlmock.NewRows([]string{"id"}).AddRow(19)
 	mock.ExpectQuery("Axis").WillReturnRows(mockAxisRow)
-	axisId := GetAccountIdFromName(db, "Axis Bank")
+	axisId := GetAccountIdFromName(db, "Axis Bank", 1)
 
 	assert.Equal(t, axisId, 19)
 }

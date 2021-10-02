@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/rounakdatta/firenest/utils"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -34,42 +35,46 @@ type Transaction struct {
 	Notes             string `json:"notes" default:""`
 }
 
-func transformType(direction parser.Direction) string {
+type Payload struct {
+	Transactions []Transaction `json:"transactions"`
+}
+
+func transformType(direction utils.Direction) string {
 	switch direction {
-	case parser.CREDIT:
+	case utils.CREDIT:
 		return "deposit"
-	case parser.DEBIT:
+	case utils.DEBIT:
 		return "withdrawal"
 	}
 
 	return ""
 }
 
-func getDefaultAccount() (int, string) {
+func getDefaultAccount(direction utils.Direction) (int, string) {
 	defaultAccountName := "(no name)"
 
 	db, err := database.GetConnection()
 	if err != nil {
 		return -1, defaultAccountName
 	}
-	return database.GetAccountIdFromName(db, defaultAccountName), defaultAccountName
+	return database.GetAccountIdFromName(db, defaultAccountName, direction), defaultAccountName
 }
 
 func getSource(account parser.AssetAccount) (int, string) {
-	if account.TransactionDetails.Type == parser.DEBIT {
+	if account.TransactionDetails.Type == utils.DEBIT {
 		return account.Id, account.Name
 	}
 
-	accountId, accountName := getDefaultAccount()
+	accountId, accountName := getDefaultAccount(account.TransactionDetails.Type)
 	return accountId, accountName
 }
 
 func getDestination(account parser.AssetAccount) (int, string) {
-	if account.TransactionDetails.Type == parser.CREDIT {
+	if account.TransactionDetails.Type == utils.CREDIT {
 		return account.Id, account.Name
 	}
 
-	accountId, accountName := getDefaultAccount()
+	accountId, accountName := getDefaultAccount(account.TransactionDetails.Type)
 	return accountId, accountName
 }
 
@@ -89,11 +94,11 @@ func ParseMessage(message string, sender string) parser.AssetAccount {
 	return parser.Process(processor, message)
 }
 
-func CreateTransaction(account parser.AssetAccount) Transaction {
+func CreateTransaction(account parser.AssetAccount) Payload {
 	sourceAccountId, sourceAccountName := getSource(account)
 	destinationAccountId, destinationAccountName := getDestination(account)
 
-	return Transaction{
+	transaction := Transaction{
 		Type:            transformType(account.TransactionDetails.Type),
 		Date:            account.TransactionDetails.Date,
 		Amount:          fmt.Sprintf("%f", account.TransactionDetails.Amount),
@@ -103,6 +108,10 @@ func CreateTransaction(account parser.AssetAccount) Transaction {
 		DestinationId:   destinationAccountId,
 		DestinationName: destinationAccountName,
 		Notes:           account.TransactionDetails.Description,
+	}
+
+	return Payload{
+		Transactions: []Transaction{transaction},
 	}
 }
 
@@ -126,7 +135,7 @@ func GetPersonalAccessToken() string {
 	return os.Getenv("FIREFLY_PAT")
 }
 
-func SendFireflyRequest(method string, url string, transaction Transaction, headers map[string]string) error {
+func SendFireflyRequest(method string, url string, transaction Payload, headers map[string]string) error {
 	payload, err := json.Marshal(transaction)
 
 	client := &http.Client{}

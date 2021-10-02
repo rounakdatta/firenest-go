@@ -13,7 +13,7 @@ func TestHDFCCreditMessage(t *testing.T) {
 	Process(&hdfcAccount, message)
 
 	assert.Equal(t, hdfcAccount.Name, "HDFC Bank")
-	assert.Equal(t, hdfcAccount.TransactionDetails.Type, CREDIT)
+	assert.Equal(t, hdfcAccount.TransactionDetails.Type, utils.CREDIT)
 	assert.Equal(t, hdfcAccount.TransactionDetails.Amount, float64(10567))
 	assert.Equal(t, hdfcAccount.TransactionDetails.Date, "2021-01-10")
 }
@@ -24,7 +24,7 @@ func TestHDFCDebitMessage(t *testing.T) {
 	Process(&hdfcAccount, message)
 
 	assert.Equal(t, hdfcAccount.Name, "HDFC Bank")
-	assert.Equal(t, hdfcAccount.TransactionDetails.Type, DEBIT)
+	assert.Equal(t, hdfcAccount.TransactionDetails.Type, utils.DEBIT)
 	assert.Equal(t, hdfcAccount.TransactionDetails.Amount, float64(10000))
 	assert.Equal(t, hdfcAccount.TransactionDetails.Date, "2021-05-12")
 }

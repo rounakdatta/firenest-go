@@ -2,6 +2,7 @@ package parser
 
 import (
 	"errors"
+	"github.com/rounakdatta/firenest/utils"
 	"regexp"
 
 	"github.com/rounakdatta/firenest/database"
@@ -17,15 +18,8 @@ type AssetAccountParser interface {
 	getAssetAccount() AssetAccount
 }
 
-type Direction uint32
-
-const (
-	DEBIT  Direction = 0
-	CREDIT Direction = 1
-)
-
 type Transaction struct {
-	Type        Direction
+	Type        utils.Direction
 	Amount      float64
 	Date        string
 	Description string
@@ -42,7 +36,7 @@ func (a *AssetAccount) setAccountId() error {
 	if err != nil {
 		return err
 	}
-	a.Id = database.GetAccountIdFromName(db, a.Name)
+	a.Id = database.GetAccountIdFromName(db, a.Name, utils.OWN)
 	return nil
 }
 
@@ -51,9 +45,9 @@ func (a *AssetAccount) parseTransactionType(message string) error {
 	creditRegex := regexp.MustCompile(`(?:(?:credited|deposited))`)
 
 	if debitRegex.MatchString(message) {
-		a.TransactionDetails.Type = DEBIT
+		a.TransactionDetails.Type = utils.DEBIT
 	} else if creditRegex.MatchString(message) {
-		a.TransactionDetails.Type = CREDIT
+		a.TransactionDetails.Type = utils.CREDIT
 	} else {
 		return errors.New("Couldn't understand transaction type")
 	}
@@ -66,9 +60,9 @@ func (a *AssetAccount) getAssetAccount() AssetAccount {
 }
 
 func Process(parser AssetAccountParser, message string) AssetAccount {
+	parser.parseTransactionType(message)
 	parser.setAccountName()
 	parser.setAccountId()
-	parser.parseTransactionType(message)
 	parser.parseTransactionAmount(message)
 	parser.parseTransactionDate(message)
 	parser.parseTransactionDescription(message)
