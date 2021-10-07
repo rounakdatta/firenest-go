@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/rounakdatta/firenest/utils"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -10,5 +11,5 @@ func TestAbstractClass(t *testing.T) {
 	Process(&hdfcAccount, "Just a blank SMS")
 
 	assert.Equal(t, hdfcAccount.Name, "HDFC Bank")
-	assert.Equal(t, hdfcAccount.TransactionDetails.Type, DEBIT)
+	assert.Equal(t, hdfcAccount.TransactionDetails.Type, utils.DEBIT)
 }

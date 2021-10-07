@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/rounakdatta/firenest/utils"
 	"regexp"
 	"strconv"
 	"strings"
@@ -61,7 +62,7 @@ func (a *AxisAccount) parseTransactionDate(message string) error {
 
 func (a *AxisAccount) parseTransactionDescription(message string) error {
 	var descriptionRegex *regexp.Regexp
-	if a.TransactionDetails.Type == DEBIT {
+	if a.TransactionDetails.Type == utils.DEBIT {
 		descriptionRegex = regexp.MustCompile(`(?:(?:at)\.?\s?)(.+?(?P<desc>\.))`)
 	} else {
 		descriptionRegex = regexp.MustCompile(`(?:(?:to\ [^a|A]|for|Info)\s?)(.+?(?P<desc>\.))`)
